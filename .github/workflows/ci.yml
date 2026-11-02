@@ -1,0 +1,57 @@
+
+name: SRE Challenge CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  ci:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: assessment-cc-sre-kubernetes-sr-01/codebase/rdicidr-0.1.0
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 15.14.0
+          cache: npm
+          cache-dependency-path: assessment-cc-sre-kubernetes-sr-01/codebase/rdicidr-0.1.0/package-lock.json
+      
+      - name: Install compatible npm
+        run: npm install -g npm@7.24.2
+
+      - name: Check Node and npm versions
+        run: |
+          node --version
+          npm --version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run Prettier
+        run: npm run prettier
+
+      - name: Run Jest tests
+        run: npm run test
+        env:
+          CI: true
+
+      - name: Build application
+        run: npm run build
+
+
+        
